@@ -4,14 +4,7 @@ This is a package manager for C++, in the style of Rust's `cargo`.
 
 
 ## Usage
-
-### Create a new project:
-
-```bash
-yacht init PROJECT_NAME
-```
-
-
+[Usage.md](/Usage.md)
 
 ## Notes
 

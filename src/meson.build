@@ -1,3 +1,4 @@
 sources = files([
-  'yacht_init.cpp'
+  'yacht_init.cpp',
+  'utils.cpp',
 ])
