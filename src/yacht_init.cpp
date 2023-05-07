@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sys/stat.h>
+#include <unistd.h>
 
 namespace Init {
 
@@ -30,6 +31,25 @@ bool projectNameIsValid(std::string name) {
     return true;
 }
 
+// TODO: Add absolute builddir path for "directory"
+// TODO: Running `yacht compile` (or equivalent) will update the
+// compile_commands
+void createCompileCommands(std::string project_name) {
+    char buf[8192];
+    auto cwd_abs = getcwd(buf, 8192);
+    auto builddir = std::string{cwd_abs} + "/" + project_name + +"/build";
+
+    std::ofstream compile_commands(builddir + "/compile_commands.json");
+    compile_commands << "[\n  {\n";
+
+    compile_commands << "\t\t\"directory\": \"" << builddir << "\",\n";
+    compile_commands << "\t\t\"command\": \"c++ -I../external/acutest/\",\n";
+    compile_commands << "\t\t\"file\": \"\"";
+
+    compile_commands << "\n  }\n]\n";
+    compile_commands.close();
+}
+
 void initProject(std::string project_name) {
     std::cout << "Creating project `" << project_name << "`..." << std::endl;
 
@@ -43,6 +63,16 @@ void initProject(std::string project_name) {
     // Create `tests` directory
     auto testdir = project_name + "/tests";
     mkdir(testdir.c_str(), 0777);
+    // TODO: Create a sample test!
+    auto testfile_name = testdir + "/test_" + project_name + ".cpp";
+    std::ofstream testfile(testfile_name);
+    testfile << "#include \"acutest.h\"\n";
+    testfile << "void exampleTest(void) {\n";
+    testfile << "\tint val = 1 + 1;\n";
+    testfile << "\tTEST_CHECK(val == 2);\n}";
+    testfile
+        << "\nTEST_LIST = {{\"Example Test\", exampleTest}, {NULL, NULL}};\n";
+    testfile.close();
 
     // Create `include` directory
     auto incdir = project_name + "/include";
@@ -53,6 +83,7 @@ void initProject(std::string project_name) {
     mkdir(externdir.c_str(), 0777);
 
     // Create main file
+    // TODO: Only do this if type is binary! otherwise its a .hpp file
     auto mainfile = srcdir + "/" + project_name + ".cpp";
     std::ofstream outfile(mainfile);
     outfile << "int main(void) { return 0; }" << std::endl;
@@ -69,20 +100,7 @@ void initProject(std::string project_name) {
     // Create `build` directory
     auto builddir = project_name + "/build";
     mkdir(builddir.c_str(), 0777);
-
-    // TODO: Add function to create a compile_commands file!
-    // This file will take care of relative includes:
-    // [
-    //   {
-    //     "directory": "/home/aryan/Dev/Cpp/hello",
-    //     "command": "c++ -I../src/utils -c ../src/hello.cpp",
-    //     "file": "../src/hello.cpp",
-    //   }
-    // ]
-    //
-    // running `yacht compile` (or equivalent) will update the compile_commands
-    // file with correct includes, depending on what the
-    // `.mod` file in each directory includes!
+    createCompileCommands(project_name);
 
     std::cout << project_name << " created!" << std::endl;
 }
