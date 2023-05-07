@@ -10,6 +10,9 @@
 
 using namespace std;
 
+// TODO: Add `yacht --help` message
+// TODO: Add `yacht init --help` message
+
 void baseUsageMessage(void) {
     system("clear");
     cout << "Usage: yacht [OPTION]..." << endl;
@@ -133,7 +136,7 @@ int main(int argc, char **argv) {
                      << endl;
             }
 
-        } else {
+        } else { // TODO: Add cases for other types
             baseUsageMessage();
         }
         break;
