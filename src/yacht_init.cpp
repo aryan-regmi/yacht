@@ -31,9 +31,7 @@ bool projectNameIsValid(std::string name) {
     return true;
 }
 
-// TODO: Add absolute builddir path for "directory"
-// TODO: Running `yacht compile` (or equivalent) will update the
-// compile_commands
+// TODO: Use ninja instead!!
 void createCompileCommands(std::string project_name) {
     char buf[8192];
     auto cwd_abs = getcwd(buf, 8192);
@@ -43,7 +41,8 @@ void createCompileCommands(std::string project_name) {
     compile_commands << "[\n  {\n";
 
     compile_commands << "\t\t\"directory\": \"" << builddir << "\",\n";
-    compile_commands << "\t\t\"command\": \"c++ -I../external/acutest/\",\n";
+    compile_commands << "\t\t\"command\": \"c++ -I../external/acutest/ -Wall "
+                        "-Wextra -Wpedantic -std=c++14\",\n";
     compile_commands << "\t\t\"file\": \"\"";
 
     compile_commands << "\n  }\n]\n";
